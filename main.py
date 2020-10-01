@@ -21,6 +21,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(23,GPIO.IN) #GPGPIO 14 -> IR sensor as input
 GPIO.setup(24,GPIO.IN) #GPGPIO 14 -> IR sensor as input
 
+global playprocess
 # assigning values to X and Y variable 
 X = 400
 Y = 400
@@ -143,20 +144,22 @@ while running:
           if event.type == pygame.KEYDOWN:
              if event.key == pygame.K_q:
                 state=5    
-      if(GPIO.input(24)==False):
+      if(GPIO.input(24)==True):
         if(pro1_content):
            subprocess.call(['pkill', '-9', 'omxplayer']) 
            pro1_img=pygame.image.load(pro1_screen)
            image_load(pro1_img,0,0)
         else:
-           if(omx==0):
+           if(omx==1):
+              print(" I am here")
               subprocess.call(['pkill', '-9', 'omxplayer']) 
-              p2=subprocess.Popen(['omxplayer','--no-osd','--no-keys','-b','-o','hdmi',pro1_screen,">/dev/null 2>&1>"],stdin=subprocess.PIPE,stdout=open(os.devnull, 'wb') )
-              omx=1
-           poll1 = p1.poll()
-           if poll1 != None:
-              omx=0 
-      elif (GPIO.input(23)==False):
+              playprocess=subprocess.call(['omxplayer','--no-osd','--no-keys','-b','-o','hdmi',pro1_screen,">/dev/null 2>&1>"],stdin=subprocess.PIPE,stdout=open(os.devnull, 'wb') )
+              omx=0
+           #poll1 = p1.poll()
+           #if poll1 != None:
+           #   omx=0 
+      elif (GPIO.input(23)==True):
+          omx=0 
           if(pro2_content):
              subprocess.call(['pkill', '-9', 'omxplayer']) 
              pro2_img=pygame.image.load(pro2_screen)
@@ -164,11 +167,11 @@ while running:
           else:
              if(omx==0):
                 subprocess.call(['pkill', '-9', 'omxplayer']) 
-                p2=subprocess.Popen(['omxplayer','--no-osd','--no-keys','-b','-o','hdmi',pro2_screen,">/dev/null 2>&1>"],stdin=subprocess.PIPE,stdout=open(os.devnull, 'wb') )
-                omx=1
-             poll2 = p2.poll()
-             if poll2 != None:
-                omx=0 
+                playprocess=subprocess.call(['omxplayer','--no-osd','--no-keys','-b','-o','hdmi',pro2_screen,">/dev/null 2>&1>"],stdin=subprocess.PIPE,stdout=open(os.devnull, 'wb') )
+                omx=0
+            # poll2 = p2.poll()
+            # if poll2 != None:
+            #    omx=0 
       else:    
           if(main_content):
              subprocess.call(['pkill', '-9', 'omxplayer']) 
@@ -177,9 +180,9 @@ while running:
           else: 
              if(omx==0):
                 subprocess.call(['pkill', '-9', 'omxplayer']) 
-                m=subprocess.Popen(['omxplayer','--no-osd','--no-keys','-b','-o','hdmi',main_screen,">/dev/null 2>&1>"],stdin=subprocess.PIPE,stdout=open(os.devnull, 'wb') )
+                playprocess=subprocess.Popen(['omxplayer','--no-osd','--no-keys','-b','-o','hdmi',main_screen,">/dev/null 2>&1>"],stdin=subprocess.PIPE,stdout=open(os.devnull, 'wb') )
                 omx=1
-             poll = m.poll()
+             poll = playprocess.poll()
              if poll != None:
                 omx=0
     else:    
